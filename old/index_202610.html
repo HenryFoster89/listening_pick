@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ascolti</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400&family=Playfair+Display:ital@1&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background: #e8e8e4;
+  }
+
+  body {
+    background: #e8e8e4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 24px 60px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .poster {
+    width: 640px;
+    background: #f2f2ef;
+    padding: 40px 40px 36px;
+    box-shadow: 0 2px 32px rgba(0,0,0,0.10);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 3px solid #111;
+    border-bottom: 1px solid #bbb;
+    padding: 10px 0 8px;
+    margin-bottom: 28px;
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.08em;
+    color: #111;
+    line-height: 1;
+  }
+
+  .header-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 300;
+    color: #888;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .cell {
+    aspect-ratio: 1;
+    background: #ddd;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .cell-tooltip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(17, 17, 17, 0.82);
+    color: #f2f2ef;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .cell-tooltip .tooltip-artist {
+    font-weight: 400;
+    display: block;
+  }
+
+  .cell-tooltip .tooltip-title {
+    display: block;
+    color: #bbb;
+  }
+
+  .cell:hover .cell-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .cell img.loaded { opacity: 1; }
+
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #999;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 12px;
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid #bbb;
+    margin-top: 22px;
+    padding-top: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .footer-ornament {
+    color: #888;
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+    letter-spacing: -2px;
+  }
+
+  .footer-latin {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #444;
+    letter-spacing: 0.04em;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  @media print {
+    html, body { background: white; padding: 0; }
+    .poster {
+      width: 30cm;
+      box-shadow: none;
+      padding: 1.4cm 1.4cm 1.2cm;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <div class="header">
+    <span class="header-title">Carmina</span>
+    <span class="header-meta" id="week-label"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    <span class="footer-latin">AD SANANDUM AUREM POST OPPIDUM MATUTIANUM</span>
+  </div>
+
+</div>
+
+<script>
+  // ── EDIT HERE ogni due settimane ─────────────────────────
+  const ALBUMS = [
+    { artist: "James Blake",  title: "Trying Times",              spotifyUrl: "https://open.spotify.com/prerelease/1MzPK6VGgb527EJa9CdZ08?si=c3ab6d532461461c" },
+    { artist: "Neoprimitivi", title: "Il sangue è pronto",        spotifyUrl: "https://open.spotify.com/intl-it/album/6zLLXWA3RZ9QECufUhAecQ?si=mdA7z1_rQB66qE7UFrsJmg" },
+    { artist: "Mitski",       title: "Nothing's About to Happen", spotifyUrl: "https://open.spotify.com/intl-it/album/2M9F3AsbWy7n4LwmJ8pqEu?si=PJ-7RsSGRr6zaw1IRbOlPQ" },
+    { artist: "Gaia Banfi",   title: "La maccaia",                spotifyUrl: "https://open.spotify.com/intl-it/album/4atG7yAO3KzgNissARQQM4?si=bkCydmYzRmWp2sl1wXYoIQ" },
+  ];
+  // ─────────────────────────────────────────────────────────
+
+  function toRoman(n) {
+    const vals = [1000,900,500,400,100,90,50,40,10,9,5,4,1];
+    const syms = ['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I'];
+    let result = '';
+    for (let i = 0; i < vals.length; i++) {
+      while (n >= vals[i]) { result += syms[i]; n -= vals[i]; }
+    }
+    return result;
+  }
+  function getWeekNum() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    return Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+  }
+
+  const now = new Date();
+  document.getElementById('week-label').textContent = `${toRoman(getWeekNum())} · ${toRoman(now.getFullYear())}`;
+
+
+  async function fetchCover(artist, title) {
+    const q = encodeURIComponent(`${artist} ${title}`);
+    try {
+      const res = await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=3&country=it`);
+      const data = await res.json();
+      if (data.resultCount > 0) {
+        const match = data.results.find(r =>
+          r.artistName.toLowerCase().includes(artist.toLowerCase())
+        ) || data.results[0];
+        return match.artworkUrl100.replace('100x100bb', '600x600bb');
+      }
+    } catch(e) {}
+    return null;
+  }
+
+  async function buildGrid() {
+    const grid = document.getElementById('grid');
+    for (const album of ALBUMS) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      // Click handler per aprire direttamente l'album su Spotify
+      cell.addEventListener('click', () => {
+        window.open(album.spotifyUrl, '_blank');
+      });
+
+      const tooltip = document.createElement('div');
+      tooltip.className = 'cell-tooltip';
+      tooltip.innerHTML = `<span class="tooltip-artist">${album.artist}</span><span class="tooltip-title">${album.title}</span>`;
+      cell.appendChild(tooltip);
+
+      const ph = document.createElement('div');
+      ph.className = 'placeholder';
+      ph.textContent = `${album.artist} — ${album.title}`;
+      cell.appendChild(ph);
+      grid.appendChild(cell);
+
+      const url = await fetchCover(album.artist, album.title);
+      if (url) {
+        const img = document.createElement('img');
+        img.alt = `${album.artist} – ${album.title}`;
+        img.src = url;
+        img.onload = () => { img.classList.add('loaded'); ph.style.display = 'none'; };
+        cell.appendChild(img);
+      }
+    }
+  }
+
+  buildGrid();
+</script>
+</body>
+</html>
