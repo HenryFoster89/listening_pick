@@ -1,5 +1,7 @@
 # listening_pick
 
+🔗 [henryfoster89.github.io/listening_pick](https://henryfoster89.github.io/listening_pick/)
+
 Bi-weekly poster of albums currently being listened to. A static HTML page — no dependencies, no build step.
 
 ## How to use
