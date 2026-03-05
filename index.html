@@ -70,6 +70,7 @@
     background: #ddd;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
   }
 
   .cell img {
@@ -202,6 +203,12 @@
     for (const album of ALBUMS) {
       const cell = document.createElement('div');
       cell.className = 'cell';
+
+      // Click handler per aprire Spotify
+      cell.addEventListener('click', () => {
+        const q = encodeURIComponent(`${album.artist} ${album.title}`);
+        window.open(`https://open.spotify.com/search/${q}`, '_blank');
+      });
 
       const ph = document.createElement('div');
       ph.className = 'placeholder';
