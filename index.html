@@ -325,6 +325,7 @@
   <div class="panel-section-label" id="panel-desc-label" style="display:none">L'angolo del Folleggiante</div>
   <p class="panel-description" id="panel-description"></p>
   <a class="panel-review" id="panel-review" target="_blank" style="display:none">La recensione →</a>
+  <a class="panel-review" id="panel-live" target="_blank" style="display:none">Il live →</a>
 </div>
 
 </div>
@@ -335,7 +336,7 @@
     { artist: "James Blake",  title: "Trying Times",              description: "", spotifyUrl: "https://open.spotify.com/prerelease/1MzPK6VGgb527EJa9CdZ08?si=c3ab6d532461461c" },
     { artist: "Neoprimitivi", title: "Il sangue è pronto",        description: "Secondo album dei primitivi, che devono il nome al pezzo \"Shock in my town\" del Maestro Battiato.\nL'immersione in questa suite di 38 minuti, che mischia 6 tracce senza alcuna soluzione di continuità, è estraniante: prog, jazz, cristianesimo, fosca psichedelia e fantascienza si intrecciano per l'intera durata dell'unico brano presente.", reviewUrl: "https://www.rollingstone.it/musica/storie-musica/neoprimitivi-o-retromaniaci/974238/", spotifyUrl: "https://open.spotify.com/intl-it/album/6zLLXWA3RZ9QECufUhAecQ?si=mdA7z1_rQB66qE7UFrsJmg" },
     { artist: "Mitski",       title: "Nothing's About to Happen", description: "", spotifyUrl: "https://open.spotify.com/intl-it/album/2M9F3AsbWy7n4LwmJ8pqEu?si=PJ-7RsSGRr6zaw1IRbOlPQ" },
-    { artist: "Gaia Banfi",   title: "La maccaia",                description: "", spotifyUrl: "https://open.spotify.com/intl-it/album/4atG7yAO3KzgNissARQQM4?si=bkCydmYzRmWp2sl1wXYoIQ" },
+    { artist: "Gaia Banfi",   title: "La maccaia",                description: "", reviewUrl: "https://www.ondarock.it/recensioni/2025-gaiabanfi-lamaccaia.htm", liveUrl: "https://www.youtube.com/watch?v=Tp3jVA69wZI", spotifyUrl: "https://open.spotify.com/intl-it/album/4atG7yAO3KzgNissARQQM4?si=bkCydmYzRmWp2sl1wXYoIQ" },
   ];
   // ─────────────────────────────────────────────────────────
 
@@ -428,6 +429,7 @@
   const elDesc      = document.getElementById('panel-description');
   const elDescLabel = document.getElementById('panel-desc-label');
   const elReview   = document.getElementById('panel-review');
+  const elLive     = document.getElementById('panel-live');
   let hideTimeout;
 
   function showPanel(album, index) {
@@ -444,10 +446,16 @@
     elDesc.textContent          = desc;
     elDescLabel.style.display   = desc ? '' : 'none';
     if (album.reviewUrl) {
-      elReview.href         = album.reviewUrl;
+      elReview.href          = album.reviewUrl;
       elReview.style.display = '';
     } else {
       elReview.style.display = 'none';
+    }
+    if (album.liveUrl) {
+      elLive.href          = album.liveUrl;
+      elLive.style.display = '';
+    } else {
+      elLive.style.display = 'none';
     }
     panel.classList.add('visible');
 
