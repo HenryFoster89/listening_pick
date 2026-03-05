@@ -73,6 +73,41 @@
     cursor: pointer;
   }
 
+  .cell-tooltip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(17, 17, 17, 0.82);
+    color: #f2f2ef;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .cell-tooltip .tooltip-artist {
+    font-weight: 400;
+    display: block;
+  }
+
+  .cell-tooltip .tooltip-title {
+    display: block;
+    color: #bbb;
+  }
+
+  .cell:hover .cell-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   .cell img {
     width: 100%;
     height: 100%;
@@ -208,6 +243,11 @@
       cell.addEventListener('click', () => {
         window.open(album.spotifyUrl, '_blank');
       });
+
+      const tooltip = document.createElement('div');
+      tooltip.className = 'cell-tooltip';
+      tooltip.innerHTML = `<span class="tooltip-artist">${album.artist}</span><span class="tooltip-title">${album.title}</span>`;
+      cell.appendChild(tooltip);
 
       const ph = document.createElement('div');
       ph.className = 'placeholder';
