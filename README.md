@@ -9,12 +9,18 @@ Bi-weekly poster of albums currently being listened to. A static HTML page — n
 
 ```js
 const ALBUMS = [
-  { artist: "Artist Name", title: "Album Title", spotifyUrl: "https://open.spotify.com/..." },
+  {
+    artist: "Artist Name",
+    title: "Album Title",
+    description: "Optional editorial note (shown in 'L'angolo del Folleggiante').",
+    reviewUrl: "https://...",   // optional — shows a "La recensione →" link
+    spotifyUrl: "https://open.spotify.com/...",
+  },
   // ...
 ];
 ```
 
-Cover art is fetched automatically from the iTunes API. Clicking an album opens it directly on Spotify. Hovering over an album shows a tooltip with the artist name and title.
+Cover art is fetched automatically from the iTunes API. Clicking an album opens it directly on Spotify. Hovering over an album shows a side panel with metadata and optional editorial content.
 
 ## Print
 
@@ -24,6 +30,13 @@ The page is optimized for printing. Use **File → Print** from the browser (or 
 - Make sure to enable "Print backgrounds and colors" in the print options
 
 ## Releases
+
+### v1.1
+- Side panel on hover with album metadata (year, label, producer)
+- Metadata fetched automatically from iTunes + Discogs
+- Panel appears left or right depending on album column, without shifting the poster
+- "L'angolo del Folleggiante" editorial section (shown when `description` is set)
+- "La recensione →" link (shown when `reviewUrl` is set)
 
 ### v1.0
 - Initial release
