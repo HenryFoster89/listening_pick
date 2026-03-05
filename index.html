@@ -162,7 +162,6 @@
   /* ── SIDE PANEL ── */
   .side-panel {
     position: absolute;
-    top: 0;
     width: 320px;
     background: #f2f2ef;
     padding: 24px 20px;
@@ -174,6 +173,8 @@
 
   .side-panel.panel-left  { right: calc(100% + 20px); transform: translateX(-6px); }
   .side-panel.panel-right { left:  calc(100% + 20px); transform: translateX( 6px); }
+  .side-panel.panel-row-top    { top: 0; bottom: auto; }
+  .side-panel.panel-row-bottom { bottom: 0; top: auto; }
 
   .side-panel.visible {
     opacity: 1;
@@ -434,9 +435,12 @@
 
   function showPanel(album, index) {
     clearTimeout(hideTimeout);
-    const isLeft = index % 2 === 0;
-    panel.classList.toggle('panel-left',  isLeft);
-    panel.classList.toggle('panel-right', !isLeft);
+    const isLeft   = index % 2 === 0;
+    const isTopRow = index < 2;
+    panel.classList.toggle('panel-left',       isLeft);
+    panel.classList.toggle('panel-right',      !isLeft);
+    panel.classList.toggle('panel-row-top',    isTopRow);
+    panel.classList.toggle('panel-row-bottom', !isTopRow);
     elArtist.textContent   = album.artist;
     elAlbum.textContent    = album.title;
     elYear.textContent     = '…';
