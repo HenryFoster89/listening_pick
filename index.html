@@ -22,6 +22,11 @@
     font-family: 'IBM Plex Mono', monospace;
   }
 
+  /* ── LAYOUT ── */
+  .layout {
+    position: relative;
+  }
+
   .poster {
     width: 640px;
     background: #f2f2ef;
@@ -144,14 +149,6 @@
     gap: 12px;
   }
 
-  .footer-ornament {
-    color: #888;
-    font-size: 20px;
-    line-height: 1;
-    flex-shrink: 0;
-    letter-spacing: -2px;
-  }
-
   .footer-latin {
     font-family: 'Playfair Display', serif;
     font-style: italic;
@@ -162,6 +159,120 @@
     white-space: nowrap;
   }
 
+  /* ── SIDE PANEL ── */
+  .side-panel {
+    position: absolute;
+    top: 0;
+    width: 320px;
+    background: #f2f2ef;
+    padding: 24px 20px;
+    box-shadow: 0 2px 32px rgba(0,0,0,0.10);
+    opacity: 0;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+  }
+
+  .side-panel.panel-left  { right: calc(100% + 20px); transform: translateX(-6px); }
+  .side-panel.panel-right { left:  calc(100% + 20px); transform: translateX( 6px); }
+
+  .side-panel.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .panel-header {
+    border-top: 3px solid #111;
+    border-bottom: 1px solid #bbb;
+    padding: 8px 0 7px;
+    margin-bottom: 18px;
+  }
+
+  .panel-header-artist {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: #111;
+    line-height: 1.1;
+  }
+
+  .panel-header-album {
+    display: block;
+    font-size: 9px;
+    font-weight: 300;
+    color: #888;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .panel-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .panel-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .panel-key {
+    font-size: 8px;
+    font-weight: 400;
+    color: #aaa;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .panel-val {
+    font-size: 11px;
+    font-weight: 300;
+    color: #222;
+    letter-spacing: 0.03em;
+  }
+
+  .panel-section-label {
+    font-size: 8px;
+    font-weight: 400;
+    color: #aaa;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-top: 1px solid #ddd;
+    padding-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  .panel-description {
+    padding-top: 0;
+    font-size: 10px;
+    font-weight: 300;
+    color: #555;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+  }
+
+  .panel-review {
+    display: block;
+    margin-top: 14px;
+    font-size: 10px;
+    font-weight: 400;
+    color: #111;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    border-bottom: 1px solid #111;
+    padding-bottom: 1px;
+    width: fit-content;
+  }
+
+  .panel-review:hover {
+    color: #555;
+    border-color: #555;
+  }
+
   @media print {
     html, body { background: white; padding: 0; }
     .poster {
@@ -169,11 +280,14 @@
       box-shadow: none;
       padding: 1.4cm 1.4cm 1.2cm;
     }
+    .side-panel { display: none; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
 <body>
+<div class="layout">
+
 <div class="poster">
 
   <div class="header">
@@ -189,13 +303,39 @@
 
 </div>
 
+<div class="side-panel" id="side-panel">
+  <div class="panel-header">
+    <span class="panel-header-artist" id="panel-artist"></span>
+    <span class="panel-header-album" id="panel-album"></span>
+  </div>
+  <div class="panel-fields">
+    <div class="panel-row">
+      <span class="panel-key">Anno</span>
+      <span class="panel-val" id="panel-year">—</span>
+    </div>
+    <div class="panel-row">
+      <span class="panel-key">Casa di produzione</span>
+      <span class="panel-val" id="panel-label">—</span>
+    </div>
+    <div class="panel-row">
+      <span class="panel-key">Produttore</span>
+      <span class="panel-val" id="panel-producer">—</span>
+    </div>
+  </div>
+  <div class="panel-section-label" id="panel-desc-label" style="display:none">L'angolo del Folleggiante</div>
+  <p class="panel-description" id="panel-description"></p>
+  <a class="panel-review" id="panel-review" target="_blank" style="display:none">La recensione →</a>
+</div>
+
+</div>
+
 <script>
   // ── EDIT HERE ogni due settimane ─────────────────────────
   const ALBUMS = [
-    { artist: "James Blake",  title: "Trying Times",              spotifyUrl: "https://open.spotify.com/prerelease/1MzPK6VGgb527EJa9CdZ08?si=c3ab6d532461461c" },
-    { artist: "Neoprimitivi", title: "Il sangue è pronto",        spotifyUrl: "https://open.spotify.com/intl-it/album/6zLLXWA3RZ9QECufUhAecQ?si=mdA7z1_rQB66qE7UFrsJmg" },
-    { artist: "Mitski",       title: "Nothing's About to Happen", spotifyUrl: "https://open.spotify.com/intl-it/album/2M9F3AsbWy7n4LwmJ8pqEu?si=PJ-7RsSGRr6zaw1IRbOlPQ" },
-    { artist: "Gaia Banfi",   title: "La maccaia",                spotifyUrl: "https://open.spotify.com/intl-it/album/4atG7yAO3KzgNissARQQM4?si=bkCydmYzRmWp2sl1wXYoIQ" },
+    { artist: "James Blake",  title: "Trying Times",              description: "", spotifyUrl: "https://open.spotify.com/prerelease/1MzPK6VGgb527EJa9CdZ08?si=c3ab6d532461461c" },
+    { artist: "Neoprimitivi", title: "Il sangue è pronto",        description: "Secondo album dei primitivi, che devono il nome al pezzo \"Shock in my town\" del Maestro Battiato.\nL'immersione in questa suite di 38 minuti, che mischia 6 tracce senza alcuna soluzione di continuità, è estraniante: prog, jazz, cristianesimo, fosca psichedelia e fantascienza si intrecciano per l'intera durata dell'unico brano presente.", reviewUrl: "https://www.rollingstone.it/musica/storie-musica/neoprimitivi-o-retromaniaci/974238/", spotifyUrl: "https://open.spotify.com/intl-it/album/6zLLXWA3RZ9QECufUhAecQ?si=mdA7z1_rQB66qE7UFrsJmg" },
+    { artist: "Mitski",       title: "Nothing's About to Happen", description: "", spotifyUrl: "https://open.spotify.com/intl-it/album/2M9F3AsbWy7n4LwmJ8pqEu?si=PJ-7RsSGRr6zaw1IRbOlPQ" },
+    { artist: "Gaia Banfi",   title: "La maccaia",                description: "", spotifyUrl: "https://open.spotify.com/intl-it/album/4atG7yAO3KzgNissARQQM4?si=bkCydmYzRmWp2sl1wXYoIQ" },
   ];
   // ─────────────────────────────────────────────────────────
 
@@ -217,7 +357,52 @@
   const now = new Date();
   document.getElementById('week-label').textContent = `${toRoman(getWeekNum())} · ${toRoman(now.getFullYear())}`;
 
+  // ── META CACHE ────────────────────────────────────────────
+  const metaCache = {};
 
+  async function fetchAlbumMeta(artist, title) {
+    const key = `${artist}|${title}`;
+    if (metaCache[key]) return metaCache[key];
+
+    let year = '—', label = '—', producer = '—';
+
+    // iTunes: anno (fallback)
+    try {
+      const q = encodeURIComponent(`${artist} ${title}`);
+      const res = await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=3&country=it`);
+      const data = await res.json();
+      if (data.resultCount > 0) {
+        const match = data.results.find(r =>
+          r.artistName.toLowerCase().includes(artist.toLowerCase())
+        ) || data.results[0];
+        if (match.releaseDate) year = match.releaseDate.substring(0, 4);
+      }
+    } catch(e) {}
+
+    // Discogs: anno, label e produttore
+    try {
+      const searchRes = await fetch(
+        `https://api.discogs.com/database/search?artist=${encodeURIComponent(artist)}&release_title=${encodeURIComponent(title)}&type=release&per_page=3`
+      );
+      const searchData = await searchRes.json();
+      if (searchData.results?.length) {
+        const releaseId = searchData.results[0].id;
+        await new Promise(r => setTimeout(r, 300));
+        const detailRes = await fetch(`https://api.discogs.com/releases/${releaseId}`);
+        const detail = await detailRes.json();
+        if (detail.year) year = String(detail.year);
+        if (detail.labels?.length) label = detail.labels[0].name;
+        const prod = detail.extraartists?.find(a => a.role?.toLowerCase().includes('produc'));
+        if (prod) producer = prod.name;
+      }
+    } catch(e) {}
+
+    const meta = { year, label, producer };
+    metaCache[key] = meta;
+    return meta;
+  }
+
+  // ── COVER FETCH ───────────────────────────────────────────
   async function fetchCover(artist, title) {
     const q = encodeURIComponent(`${artist} ${title}`);
     try {
@@ -233,16 +418,65 @@
     return null;
   }
 
+  // ── PANEL ─────────────────────────────────────────────────
+  const panel      = document.getElementById('side-panel');
+  const elArtist   = document.getElementById('panel-artist');
+  const elAlbum    = document.getElementById('panel-album');
+  const elYear     = document.getElementById('panel-year');
+  const elLabel    = document.getElementById('panel-label');
+  const elProducer = document.getElementById('panel-producer');
+  const elDesc      = document.getElementById('panel-description');
+  const elDescLabel = document.getElementById('panel-desc-label');
+  const elReview   = document.getElementById('panel-review');
+  let hideTimeout;
+
+  function showPanel(album, index) {
+    clearTimeout(hideTimeout);
+    const isLeft = index % 2 === 0;
+    panel.classList.toggle('panel-left',  isLeft);
+    panel.classList.toggle('panel-right', !isLeft);
+    elArtist.textContent   = album.artist;
+    elAlbum.textContent    = album.title;
+    elYear.textContent     = '…';
+    elLabel.textContent    = '…';
+    elProducer.textContent = '…';
+    const desc = album.description || '';
+    elDesc.textContent          = desc;
+    elDescLabel.style.display   = desc ? '' : 'none';
+    if (album.reviewUrl) {
+      elReview.href         = album.reviewUrl;
+      elReview.style.display = '';
+    } else {
+      elReview.style.display = 'none';
+    }
+    panel.classList.add('visible');
+
+    fetchAlbumMeta(album.artist, album.title).then(meta => {
+      elYear.textContent     = meta.year;
+      elLabel.textContent    = meta.label;
+      elProducer.textContent = meta.producer;
+    });
+  }
+
+  function scheduleHide() {
+    hideTimeout = setTimeout(() => panel.classList.remove('visible'), 150);
+  }
+
+  panel.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+  panel.addEventListener('mouseleave', scheduleHide);
+
+  // ── GRID ──────────────────────────────────────────────────
   async function buildGrid() {
     const grid = document.getElementById('grid');
-    for (const album of ALBUMS) {
+    for (const [index, album] of ALBUMS.entries()) {
       const cell = document.createElement('div');
       cell.className = 'cell';
 
-      // Click handler per aprire direttamente l'album su Spotify
       cell.addEventListener('click', () => {
         window.open(album.spotifyUrl, '_blank');
       });
+      cell.addEventListener('mouseenter', () => showPanel(album, index));
+      cell.addEventListener('mouseleave', scheduleHide);
 
       const tooltip = document.createElement('div');
       tooltip.className = 'cell-tooltip';
